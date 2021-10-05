@@ -2,6 +2,8 @@
 
 // const { isArray, isObject } = require("simpul");
 
+// String, Number, Boolean, Date, Array, Object
+
 // // Custom: () => {},
 // // Date: ...
 // // Array: includes, excludes, length.
@@ -10,38 +12,32 @@
 // // String: whitelist, blacklist, match, matchSensitive, matchInsensitive.
 // // Misc... value exists (value || isNumber(value) || isBoolean(value))
 
-// function dottpathQueryObjects(array, queries, sort) {
-//   if (isArray(array)) {
-//     const filtered = [];
+function query(array, config) {
+  if (isArrayValid(array)) {
+  } else return [];
+}
 
-//     if (isArrayValid(queries)) {
-//       for (let i = 0; i < array.length; i++) {
-//         let object = array[i];
-//         if (isObject(object)) {
-//           console.log(object);
-//         }
-//       }
-//     }
+function sort(array, config) {
+  if (isArrayValid(array) && isObjectValid(config)) {
+    // const { primary, secondary, reverse } = sort;
+    //  if (primary)
+    //    filteredRows.sort(
+    //      (a, b) => a[primary] - b[primary] || a[secondary] - b[secondary]
+    //    );
+    //  if (reverse) filteredRows.reverse();
+  }
+}
 
-//     if (isObject(sort)) {
-//       // const { primary, secondary, reverse } = sort;
-//       // if (primary)
-//       //   filteredRows.sort(
-//       //     (a, b) => a[primary] - b[primary] || a[secondary] - b[secondary]
-//       //   );
-//       // if (reverse) filteredRows.reverse();
-//     }
+const dottpathQueryObjects = (array) => ({
+  query: (config) => query(array, config),
+  sort: (config) => sort(array, config),
+});
 
-//     return filtered;
-//   } else return array;
-// }
-
-// //   sort: {
-// //     secondary: "stocktwits_trending_score",
-// //     primary: "vol_approx_value",
-// //     reverse: true,
-// //   },
-// // };
+//   sort: {
+//     secondary: "stocktwits_trending_score",
+//     primary: "vol_approx_value",
+//     reverse: true,
+//   },
 // //
 // //     let condition;
 // //     if (!filterKeys.length) {
@@ -82,4 +78,4 @@
 // //     if (condition === true) filteredRows.push(row);
 // //   }
 
-// module.exports = dottpathQueryObjects;
+module.exports = dottpathQueryObjects;

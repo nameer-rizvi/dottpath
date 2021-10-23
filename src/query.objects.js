@@ -1,81 +1,137 @@
-// WIP
+const { isArrayValid, isDate, isObjectValid } = require("simpul");
+const dottpathExtract = require("./extract");
 
-// const { isArray, isObject } = require("simpul");
+// String,
+// Number,
+// Boolean,
+// Date,
+// Array,
+// Object,
+// Custom,
 
-// String, Number, Boolean, Date, Array, Object
-
-// // Custom: () => {},
-// // Date: ...
-// // Array: includes, excludes, length.
-// // Number: min, max, equals.
-// // Object: .
-// // String: whitelist, blacklist, match, matchSensitive, matchInsensitive.
-// // Misc... value exists (value || isNumber(value) || isBoolean(value))
-
-function query(array, config) {
+function query(array = [], config = {}) {
   if (isArrayValid(array)) {
-  } else return [];
-}
+    const passes = [];
 
-function sort(array, config) {
-  if (isArrayValid(array) && isObjectValid(config)) {
-    // const { primary, secondary, reverse } = sort;
-    //  if (primary)
-    //    filteredRows.sort(
-    //      (a, b) => a[primary] - b[primary] || a[secondary] - b[secondary]
-    //    );
-    //  if (reverse) filteredRows.reverse();
-  }
+    const queryKeys = Object.keys(config);
+
+    for (let i = 0; i < array.length; i++) {
+      let item = array[i];
+
+      for (let j = 0; j < queryKeys.length; j++) {
+        let key = queryKeys[j];
+
+        let value = dottpathExtract(item, key);
+
+        let filters = Object.keys(config[key]);
+
+        let condition;
+
+        for (let k = 0; k < filters.length; k++) {
+          if (condition !== false) {
+            let filter = filters[k];
+
+            let setting = config[key][filter];
+
+            if (setting) {
+              let valueIsString = typeof value === "string";
+
+              let valueIsNumber = typeof value === "number";
+
+              condition =
+                filter === "isType"
+                  ? typeof value === setting
+                  : filter === "isConstructor"
+                  ? value && value.constructor === setting
+                  : filter === "exists" && setting === true
+                  ? valueIsString
+                    ? Boolean(value.trim())
+                    : valueIsNumber
+                    ? valueIsNumber
+                    : Boolean(value !== null && value !== undefined)
+                  : filter === "exists" && setting === false
+                  ? valueIsString
+                    ? !Boolean(value.trim())
+                    : valueIsNumber
+                    ? !valueIsNumber
+                    : !Boolean(value !== null && value !== undefined)
+                  : filter === "matchInsensitive"
+                  ? valueIsString
+                    ? value.toLowerCase().trim() ===
+                      setting.toLowerCase().trim()
+                    : false
+                  : filter === "matchSensitive" ||
+                    filter === "match" ||
+                    "equals"
+                  ? valueIsString || valueIsNumber
+                    ? value === setting
+                    : false
+                  : filter === "includesInsensitive"
+                  ? valueIsString
+                    ? value.toLowerCase().includes(setting.toLowerCase())
+                    : false
+                  : filter === "includesSensitive" || filter === "includes"
+                  ? valueIsString
+                    ? value.includes(setting)
+                    : false
+                  : filter === "minLength"
+                  ? valueIsString
+                    ? value.length >= setting
+                    : false
+                  : filter === "maxLength"
+                  ? valueIsString
+                    ? value.length <= setting
+                    : false
+                  : filter === "max"
+                  ? valueIsNumber
+                    ? value > setting
+                    : false
+                  : filter === "min"
+                  ? valueIsNumber
+                    ? value < setting
+                    : false
+                  : filter === "mod"
+                  ? valueIsNumber
+                    ? value % setting
+                    : false
+                  : false;
+            }
+          } else break;
+        }
+
+        if (condition === true) passes.push(item);
+      }
+    }
+
+    return passes;
+  } else return array;
 }
 
 const dottpathQueryObjects = (array) => ({
   query: (config) => query(array, config),
-  sort: (config) => sort(array, config),
 });
 
-//   sort: {
-//     secondary: "stocktwits_trending_score",
-//     primary: "vol_approx_value",
-//     reverse: true,
-//   },
-// //
-// //     let condition;
-// //     if (!filterKeys.length) {
-// //       let primarySort = option.sort && option.sort.primary;
-// //       condition = primarySort ? Boolean(row[primarySort]) : true;
-// //     } else {
-// //       for (let j = 0; j < filterKeys.length; j++) {
-// //         let filterKey = filterKeys[j];
-// //         let filterSetting = option.filter[filterKey];
-// //         let filterSettingKeys = Object.keys(filterSetting);
-// //         for (let k = 0; k < filterSettingKeys.length; k++) {
-// //           if (condition !== false) {
-// //             let filterSettingKey = filterSettingKeys[k];
-// //             let rowValue = row[filterKey];
-// //             let filterSettingValue = filterSetting[filterSettingKey];
-// //             if (filterSettingKey === "exists") {
-// //               condition =
-// //                 typeof rowValue === "number" ||
-// //                 typeof rowValue === "boolean" ||
-// //                 Boolean(rowValue);
-// //             } else if (filterSettingKey === "match") {
-// //               condition =
-// //                 typeof rowValue === "string" &&
-// //                 rowValue.toLowerCase() === filterSettingValue.toLowerCase();
-// //             } else if (filterSettingKey === "min") {
-// //               condition =
-// //                 typeof rowValue === "number" &&
-// //                 rowValue >= filterSettingValue;
-// //             } else if (filterSettingKey === "max") {
-// //               condition =
-// //                 typeof rowValue === "number" &&
-// //                 rowValue <= filterSettingValue;
-// //             }
-// //           }
-// //         }
-// //       }
-// //     }
-// //     if (condition === true) filteredRows.push(row);
-// //   }
+console.log(
+  dottpathQueryObjects([
+    { value: { state: 0 } },
+    { value: { state: 1 } },
+    { value: { state: 2 } },
+    { value: { state: undefined } },
+    { value: { state: 4 } },
+  ]).query({ "value.state": { lessThan: 4 } })
+);
+
+// sort: (config) => sort(array, config),
+//
+// function sort(array, config) {
+//   if (isArrayValid(array) && isObjectValid(config)) {
+//     // const { primary, secondary, reverse } = sort;
+//     //  if (primary)
+//     //    filteredRows.sort(
+//     //      (a, b) => a[primary] - b[primary] || a[secondary] - b[secondary]
+//     //    );
+//     //  if (reverse) filteredRows.reverse();
+//   }
+// }
 
 module.exports = dottpathQueryObjects;

@@ -1,64 +1,61 @@
 const dottpathMap = require("./map");
 const dottpathExtract = require("./extract");
-const { isDate } = require("simpul");
+const { isDate, isNumber, tryCallback } = require("simpul");
 
-function dottpathDiffs(prev, curr, excludePaths, callback) {
+function dottpathDiffs(prev, curr, excludePaths) {
   const diffs = [];
-  try {
-    if (JSON.stringify(prev) === JSON.stringify(curr)) return diffs;
 
-    let allPaths = [...dottpathMap(prev), ...dottpathMap(curr)];
+  if (JSON.stringify(prev) === JSON.stringify(curr)) return diffs;
 
-    if (excludePaths)
-      allPaths = allPaths.filter(
-        (path) => !excludePaths.some((exclude) => path.startsWith(exclude))
-      );
+  const allPaths = [...dottpathMap(prev), ...dottpathMap(curr)];
 
-    const uniquePaths = [...new Set(allPaths)].sort();
+  let uniquePaths = [...new Set(allPaths)].sort();
 
-    const timestamp = new Date().getTime();
+  if (excludePaths)
+    uniquePaths = uniquePaths.filter(
+      (uniquePath) =>
+        !excludePaths.some((excludePath) => uniquePath.startsWith(excludePath))
+    );
 
-    for (let i = 0; i < uniquePaths.length; i++) {
-      let path = uniquePaths[i];
+  const timestamp = new Date().getTime();
 
-      let prevValue = dottpathExtract(prev, path);
+  for (let i = 0; i < uniquePaths.length; i++) {
+    let path = uniquePaths[i];
 
-      let currValue = dottpathExtract(curr, path);
+    let prevValue = dottpathExtract(prev, path);
 
-      const isDiff =
-        isDate(prevValue) && isDate(currValue)
-          ? new Date(prevValue).getTime() !== new Date(currValue).getTime()
-          : prevValue !== currValue;
+    let currValue = dottpathExtract(curr, path);
 
-      if (isDiff) {
-        let diff = { path, currValue, prevValue, timestamp };
+    let isDiff =
+      isDate(prevValue) && isDate(currValue)
+        ? new Date(prevValue).getTime() !== new Date(currValue).getTime()
+        : prevValue !== currValue;
 
-        let currValueRemoved = currValue === null || currValue === undefined;
+    if (isDiff) {
+      let diff = { path, currValue, prevValue, timestamp };
 
-        let prevValueRemoved = prevValue === null || prevValue === undefined;
+      let currValueRemoved = currValue === null || currValue === undefined;
 
-        diff.state =
-          prevValue && currValueRemoved
-            ? "property removed"
-            : prevValueRemoved && currValue
-            ? "property added"
-            : "value changed";
+      let prevValueRemoved = prevValue === null || prevValue === undefined;
 
-        if (typeof prevValue === "number" && typeof currValue === "number")
-          diff.change = prevValue - currValue;
+      diff.state =
+        prevValue && currValueRemoved
+          ? "property removed"
+          : prevValueRemoved && currValue
+          ? "property added"
+          : "value changed";
 
-        diffs.push(diff);
-      }
+      if (isNumber(prevValue) && isNumber(currValue))
+        diff.change = Number(prevValue) - Number(currValue);
+
+      diffs.push(diff);
     }
-
-    if (callback) callback(null, diffs);
-
-    return diffs;
-  } catch (err) {
-    if (callback) callback(err);
-
-    return diffs;
   }
+
+  return diffs;
 }
 
-module.exports = dottpathDiffs;
+const dottpathDiffsWithCallback = (prev, curr, excludePaths, callback) =>
+  tryCallback(() => dottpathDiffs(prev, curr, excludePaths), callback);
+
+module.exports = dottpathDiffsWithCallback;

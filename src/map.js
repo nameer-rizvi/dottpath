@@ -7,24 +7,22 @@ function dottpathMap(json, prepend = "") {
 
   if (isArray(json)) {
     for (let i = 0; i < json.length; i++) {
-      let item = json[i];
       let index = i.toString();
       let path = prepend ? [prepend, index].join(delimiter) : index;
-      if (isArray(item) || isObject(item)) {
-        let subpath = dottpathMap(item, path);
-        paths.push(subpath);
-      } else paths.push(path);
+      let value = json[i];
+      let pushPath =
+        isArray(value) || isObject(value) ? dottpathMap(value, path) : path;
+      paths.push(pushPath);
     }
   } else if (isObject(json)) {
     const keys = Object.keys(json);
     for (let i = 0; i < keys.length; i++) {
-      let item = json[keys[i]];
       let key = keys[i];
-      let path = prepend ? [prepend, key].join(delimiter) : key;
-      if (isArray(item) || isObject(item)) {
-        let subpath = dottpathMap(item, path);
-        paths.push(subpath);
-      } else paths.push(path);
+      let value = json[key];
+      let path = [prepend, key].filter(Boolean).join(delimiter);
+      let pushPath =
+        isArray(value) || isObject(value) ? dottpathMap(value, path) : path;
+      paths.push(pushPath);
     }
   }
 

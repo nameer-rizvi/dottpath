@@ -1,6 +1,6 @@
 {
   "name": "dottpath",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Methods to extract, map, query, find diffs in json through dot path notation.",
   "main": "src/index.js",
   "scripts": {

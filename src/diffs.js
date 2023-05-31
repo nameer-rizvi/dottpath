@@ -1,62 +1,54 @@
-const { tryCallback, isDate, isNumber } = require("simpul");
+const simpul = require("simpul");
 const dottpathMap = require("./map");
 const dottpathExtract = require("./extract");
 
-const dottpathDiffs = (prev, curr, excludePaths, callback) =>
-  tryCallback(() => {
-    {
-      const diffs = [];
+function dottpathDiffs(prev, curr, excludePaths) {
+  const diffs = [];
 
-      if (JSON.stringify(prev) === JSON.stringify(curr)) return diffs;
+  if (simpul.isJSON(prev) && simpul.isJSON(curr)) {
+    if (JSON.stringify(prev) === JSON.stringify(curr)) return diffs;
 
-      const allPaths = [...dottpathMap(prev), ...dottpathMap(curr)];
+    let paths = [...dottpathMap(prev), ...dottpathMap(curr)];
 
-      let uniquePaths = [...new Set(allPaths)].sort();
+    paths = [...new Set(paths)].sort();
 
-      if (excludePaths)
-        uniquePaths = uniquePaths.filter((uniquePath) => {
-          return !excludePaths.some((excludePath) => {
-            return uniquePath.startsWith(excludePath);
-          });
-        });
+    if (excludePaths)
+      paths = paths.filter((p) => !excludePaths.some((p2) => p.startsWith(p2)));
 
-      const timestamp = new Date().getTime();
+    const timestamp = new Date().getTime();
 
-      for (let i = 0; i < uniquePaths.length; i++) {
-        let path = uniquePaths[i];
+    for (let path of paths) {
+      let prevValue = dottpathExtract(prev, path);
 
-        let prevValue = dottpathExtract(prev, path);
+      let currValue = dottpathExtract(curr, path);
 
-        let currValue = dottpathExtract(curr, path);
+      let isDiff =
+        simpul.isDate(prevValue) && simpul.isDate(currValue)
+          ? new Date(prevValue).getTime() !== new Date(currValue).getTime()
+          : prevValue !== currValue;
 
-        let isDiff =
-          isDate(prevValue) && isDate(currValue)
-            ? new Date(prevValue).getTime() !== new Date(currValue).getTime()
-            : prevValue !== currValue;
+      if (isDiff) {
+        let diff = { path, currValue, prevValue, timestamp };
 
-        if (isDiff) {
-          let diff = { path, currValue, prevValue, timestamp };
+        let currValueRemoved = simpul.isValid(currValue);
 
-          let currValueRemoved = currValue === null || currValue === undefined;
+        let prevValueRemoved = simpul.isValid(prevValue);
 
-          let prevValueRemoved = prevValue === null || prevValue === undefined;
+        if (prevValue && currValueRemoved) {
+          diff.state = "property removed";
+        } else if (prevValueRemoved && currValue) {
+          diff.state = "property added";
+        } else diff.state = "value changed";
 
-          diff.state =
-            prevValue && currValueRemoved
-              ? "property removed"
-              : prevValueRemoved && currValue
-              ? "property added"
-              : "value changed";
+        if (simpul.isNumber(prevValue) && simpul.isNumber(currValue))
+          diff.change = Number(currValue) - Number(prevValue);
 
-          if (isNumber(prevValue) && isNumber(currValue))
-            diff.change = Number(currValue) - Number(prevValue);
-
-          diffs.push(diff);
-        }
+        diffs.push(diff);
       }
-
-      return diffs;
     }
-  }, callback);
+  }
+
+  return diffs;
+}
 
 module.exports = dottpathDiffs;

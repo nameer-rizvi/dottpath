@@ -1,27 +1,29 @@
-const { isArray, isObject } = require("simpul");
+const simpul = require("simpul");
 
 function dottpathMap(json, prepend = "") {
   const paths = [];
 
   const delimiter = ".";
 
-  if (isArray(json)) {
+  if (simpul.isArray(json)) {
     for (let i = 0; i < json.length; i++) {
       let index = i.toString();
       let path = prepend ? [prepend, index].join(delimiter) : index;
-      let value = json[i];
+      let item = json[i];
       let pushPath =
-        isArray(value) || isObject(value) ? dottpathMap(value, path) : path;
+        simpul.isArray(item) || simpul.isObject(item)
+          ? dottpathMap(item, path)
+          : path;
       paths.push(pushPath);
     }
-  } else if (isObject(json)) {
-    const keys = Object.keys(json);
-    for (let i = 0; i < keys.length; i++) {
-      let key = keys[i];
+  } else if (simpul.isObject(json)) {
+    for (let key of Object.keys(json)) {
       let value = json[key];
-      let path = [prepend, key].filter(Boolean).join(delimiter);
+      let path = prepend ? [prepend, key].join(delimiter) : key;
       let pushPath =
-        isArray(value) || isObject(value) ? dottpathMap(value, path) : path;
+        simpul.isArray(value) || simpul.isObject(value)
+          ? dottpathMap(value, path)
+          : path;
       paths.push(pushPath);
     }
   }

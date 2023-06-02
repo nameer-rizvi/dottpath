@@ -30,9 +30,9 @@ function dottpathDiffs(prev, curr, excludePaths) {
       if (isDiff) {
         let diff = { path, currValue, prevValue, timestamp };
 
-        let currValueRemoved = simpul.isValid(currValue);
+        let currValueRemoved = !simpul.isValid(currValue);
 
-        let prevValueRemoved = simpul.isValid(prevValue);
+        let prevValueRemoved = !simpul.isValid(prevValue);
 
         if (prevValue && currValueRemoved) {
           diff.state = "property removed";

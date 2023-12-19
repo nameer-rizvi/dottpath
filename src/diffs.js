@@ -2,46 +2,52 @@ const simpul = require("simpul");
 const dottpathMap = require("./map");
 const dottpathExtract = require("./extract");
 
-function dottpathDiffs(prev, curr, excludePaths) {
+function dottpathDiffs(jsonA, jsonB, excludes) {
   const diffs = [];
 
-  if (simpul.isJSON(prev) && simpul.isJSON(curr)) {
-    if (JSON.stringify(prev) === JSON.stringify(curr)) return diffs;
+  if (simpul.isJSON(jsonA) && simpul.isJSON(jsonB)) {
+    if (JSON.stringify(jsonA) === JSON.stringify(jsonB)) return diffs;
 
-    let paths = [...dottpathMap(prev), ...dottpathMap(curr)];
+    let paths = [...new Set([...dottpathMap(jsonA), ...dottpathMap(jsonB)])];
 
-    paths = [...new Set(paths)].sort();
+    paths.sort();
 
-    if (excludePaths)
-      paths = paths.filter((p) => !excludePaths.some((p2) => p.startsWith(p2)));
+    if (excludes) {
+      paths = paths.filter((path) => {
+        return !excludes.some((exclude) => path.startsWith(exclude));
+      });
+    }
 
     const timestamp = new Date().getTime();
 
     for (let path of paths) {
-      let prevValue = dottpathExtract(prev, path);
+      let valueA = dottpathExtract(jsonA, path);
 
-      let currValue = dottpathExtract(curr, path);
+      let valueB = dottpathExtract(jsonB, path);
 
       let isDiff =
-        simpul.isDate(prevValue) && simpul.isDate(currValue)
-          ? new Date(prevValue).getTime() !== new Date(currValue).getTime()
-          : prevValue !== currValue;
+        simpul.isDate(valueA) && simpul.isDate(valueB)
+          ? new Date(valueA).getTime() !== new Date(valueB).getTime()
+          : valueA !== valueB;
 
       if (isDiff) {
-        let diff = { path, currValue, prevValue, timestamp };
+        let diff = { path, valueA, valueB, timestamp };
 
-        let currValueRemoved = !simpul.isValid(currValue);
+        let valueAIsValid = simpul.isValid(valueA);
 
-        let prevValueRemoved = !simpul.isValid(prevValue);
+        let valueBIsValid = simpul.isValid(valueB);
 
-        if (prevValue && currValueRemoved) {
+        diff.state = "value changed";
+
+        if (valueA && !valueBIsValid) {
           diff.state = "property removed";
-        } else if (prevValueRemoved && currValue) {
+        } else if (valueB && !valueAIsValid) {
           diff.state = "property added";
-        } else diff.state = "value changed";
+        }
 
-        if (simpul.isNumber(prevValue) && simpul.isNumber(currValue))
-          diff.change = Number(currValue) - Number(prevValue);
+        if (simpul.isNumber(valueA) && simpul.isNumber(valueB)) {
+          diff.change = simpul.math.change.num(valueA, valueB);
+        }
 
         diffs.push(diff);
       }

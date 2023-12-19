@@ -1,6 +1,6 @@
 {
   "name": "dottpath",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Use dot path notation to find diffs, map paths, and set or extract items/values.",
   "main": "src/index.js",
   "scripts": {
@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/nameer-rizvi/dottpath#readme",
   "dependencies": {
-    "simpul": "^0.9.3"
+    "simpul": "^0.9.6"
   }
 }

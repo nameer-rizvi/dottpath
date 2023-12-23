@@ -734,10 +734,10 @@ shebang-regex@^3.0.0:
   resolved "https://registry.yarnpkg.com/shebang-regex/-/shebang-regex-3.0.0.tgz#ae16f1644d873ecad843b0307b143362d4c42172"
   integrity sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==
 
-simpul@^0.9.7:
-  version "0.9.7"
-  resolved "https://registry.yarnpkg.com/simpul/-/simpul-0.9.7.tgz#495de81bd4179251a0c33defc18142dce1005f46"
-  integrity sha512-Kbm44cRa/dE9CM591zum0hCR10sLQkSb90hWnd/WHJh34W6IzNMoJ9IU2273A6g3qcGwVzdehyqQsx0qkkYkRw==
+simpul@^0.9.9:
+  version "0.9.9"
+  resolved "https://registry.yarnpkg.com/simpul/-/simpul-0.9.9.tgz#f420ce3b889d12e41503ee987f2595a26d901544"
+  integrity sha512-Pd0g1gXByjKUKhYvldK+/7WeQbrnKbJcJy+VnJAjcAhfz/OCv9hbEWGNfMkijSA6pIuyrngoYTBtpFZ5s+Zu0A==
   dependencies:
     change-case "4.1.2"
     eslint "^8.56.0"

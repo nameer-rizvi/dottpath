@@ -1,6 +1,6 @@
 {
   "name": "dottpath",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Use dot path notation to find diffs, map paths, and set or extract items/values.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

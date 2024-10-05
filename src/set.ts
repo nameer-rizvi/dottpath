@@ -1,6 +1,6 @@
-const simpul = require("simpul");
+import simpul from "simpul";
 
-function dottpathSet(json, set) {
+function dottpathSet(json: any, set: Record<string, any>): void {
   if (simpul.isJSON(json) && simpul.isObject(set)) {
     simpul.recursively(json, ({ path, value }) => {
       return Object.keys(set).includes(path) ? set[path] : value;
@@ -8,4 +8,4 @@ function dottpathSet(json, set) {
   }
 }
 
-module.exports = dottpathSet;
+export default dottpathSet;

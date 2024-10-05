@@ -1,10 +1,10 @@
-const simpul = require("simpul");
+import simpul from "simpul";
 
-function dottpathExtract(json, extract) {
+function dottpathExtract(json: any, extract: any): any {
   if (simpul.isString(extract)) {
-    return extract.split(".").reduce((o, i) => o?.[i], json);
+    return extract.split(".").reduce((o: any, i: any) => o?.[i], json);
   } else if (simpul.isArray(extract)) {
-    return extract.map((item) => dottpathExtract(json, item));
+    return extract.map((item: any) => dottpathExtract(json, item));
   } else if (simpul.isObject(extract)) {
     return Object.entries(extract).reduce((result, [key, value]) => {
       return { ...result, [key]: dottpathExtract(json, value) };
@@ -12,4 +12,4 @@ function dottpathExtract(json, extract) {
   }
 }
 
-module.exports = dottpathExtract;
+export default dottpathExtract;

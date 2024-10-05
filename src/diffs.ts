@@ -1,9 +1,22 @@
-const simpul = require("simpul");
-const dottpathMap = require("./map");
-const dottpathExtract = require("./extract");
+import simpul from "simpul";
+import dottpathMap from "./map";
+import dottpathExtract from "./extract";
 
-function dottpathDiffs(jsonA, jsonB, excludes = []) {
-  const diffs = [];
+interface Diff {
+  path: string;
+  valueA: any;
+  valueB: any;
+  state: string;
+  change?: number;
+  timestamp: number;
+}
+
+function dottpathDiffs(
+  jsonA: any,
+  jsonB: any,
+  excludes: string[] = [],
+): Diff[] {
+  const diffs: Diff[] = [];
 
   if (!simpul.isJSON(jsonA) || !simpul.isJSON(jsonB)) return diffs;
 
@@ -32,13 +45,17 @@ function dottpathDiffs(jsonA, jsonB, excludes = []) {
         : valueA !== valueB;
 
     if (isDiff) {
-      const diff = { path, valueA, valueB };
+      const diff: Diff = {
+        path,
+        valueA,
+        valueB,
+        state: "value changed",
+        timestamp,
+      };
 
       const isValidValueA = simpul.isValid(valueA);
 
       const isValidValueB = simpul.isValid(valueB);
-
-      diff.state = "value changed";
 
       if (valueA && !isValidValueB) {
         diff.state = "property removed";
@@ -48,9 +65,9 @@ function dottpathDiffs(jsonA, jsonB, excludes = []) {
 
       if (simpul.isNumber(valueA) && simpul.isNumber(valueB)) {
         diff.change = simpul.math.change.num(valueA, valueB);
+      } else if (simpul.isDate(valueA) && simpul.isDate(valueB)) {
+        diff.change = new Date(valueB).getTime() - new Date(valueA).getTime();
       }
-
-      diff.timestamp = timestamp;
 
       diffs.push(diff);
     }
@@ -59,4 +76,4 @@ function dottpathDiffs(jsonA, jsonB, excludes = []) {
   return diffs;
 }
 
-module.exports = dottpathDiffs;
+export default dottpathDiffs;

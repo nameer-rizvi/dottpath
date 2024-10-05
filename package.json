@@ -2,8 +2,13 @@
   "name": "dottpath",
   "version": "0.1.5",
   "description": "Use dot path notation to find diffs, map paths, and set or extract items/values.",
-  "main": "src/index.js",
-  "scripts": {},
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test-cjs": "yarn build && node test/test-cjs.js",
+    "test-esm": "yarn build && node test/test-esm.mjs"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nameer-rizvi/dottpath.git"
@@ -16,6 +21,11 @@
   },
   "homepage": "https://github.com/nameer-rizvi/dottpath#readme",
   "dependencies": {
-    "simpul": "^1.1.2"
+    "simpul": "^1.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
   }
 }

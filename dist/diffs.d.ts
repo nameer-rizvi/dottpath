@@ -1,10 +1,10 @@
-interface Diff {
+export interface Diff {
     path: string;
-    valueA: any;
-    valueB: any;
-    state: string;
+    valueA: unknown;
+    valueB: unknown;
+    state: "value changed" | "property added" | "property removed";
     change?: number;
     timestamp: number;
 }
-declare function dottpathDiffs(jsonA: any, jsonB: any, excludes?: string[]): Diff[];
+declare function dottpathDiffs(inputA: unknown, inputB: unknown, excludes?: string[]): Diff[];
 export default dottpathDiffs;

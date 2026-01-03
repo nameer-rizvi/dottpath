@@ -6,23 +6,26 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const simpul_1 = __importDefault(require("simpul"));
 const map_1 = __importDefault(require("./map"));
 const extract_1 = __importDefault(require("./extract"));
-function dottpathDiffs(jsonA, jsonB, excludes = []) {
+function dottpathDiffs(inputA, inputB, excludes = []) {
     const diffs = [];
-    if (!simpul_1.default.isJSON(jsonA) || !simpul_1.default.isJSON(jsonB))
+    if (!simpul_1.default.isJSON(inputA) ||
+        !simpul_1.default.isJSON(inputB) ||
+        Object.is(inputA, inputB) ||
+        JSON.stringify(inputA) === JSON.stringify(inputB)) {
         return diffs;
-    if (JSON.stringify(jsonA) === JSON.stringify(jsonB))
-        return diffs;
-    let paths = [...new Set([...(0, map_1.default)(jsonA), ...(0, map_1.default)(jsonB)])];
-    paths.sort();
-    if (excludes.length > 0) {
+    }
+    let paths = [...new Set([...(0, map_1.default)(inputA), ...(0, map_1.default)(inputB)])];
+    const excludeSet = [...new Set(excludes)];
+    if (excludeSet.length > 0) {
         paths = paths.filter((path) => {
-            return !excludes.some((exclude) => path.startsWith(exclude));
+            return !excludeSet.some((exclude) => path.startsWith(exclude));
         });
     }
+    paths.sort();
     const timestamp = Date.now();
     for (const path of paths) {
-        const valueA = (0, extract_1.default)(jsonA, path);
-        const valueB = (0, extract_1.default)(jsonB, path);
+        const valueA = (0, extract_1.default)(inputA, path);
+        const valueB = (0, extract_1.default)(inputB, path);
         const isDiff = simpul_1.default.isDate(valueA) && simpul_1.default.isDate(valueB)
             ? new Date(valueA).getTime() !== new Date(valueB).getTime()
             : valueA !== valueB;
@@ -36,14 +39,20 @@ function dottpathDiffs(jsonA, jsonB, excludes = []) {
             };
             const isValidValueA = simpul_1.default.isValid(valueA);
             const isValidValueB = simpul_1.default.isValid(valueB);
-            if (valueA && !isValidValueB) {
-                diff.state = "property removed";
-            }
-            else if (valueB && !isValidValueA) {
+            if (!isValidValueA && isValidValueB) {
                 diff.state = "property added";
             }
-            if (simpul_1.default.isNumber(valueA) && simpul_1.default.isNumber(valueB)) {
-                diff.change = simpul_1.default.math.change.num(valueA, valueB);
+            else if (isValidValueA && !isValidValueB) {
+                diff.state = "property removed";
+            }
+            if (simpul_1.default.isNumeric(valueA) && simpul_1.default.isNumeric(valueB)) {
+                const numA = simpul_1.default.isNumberString(valueA)
+                    ? parseFloat(valueA)
+                    : valueA;
+                const numB = simpul_1.default.isNumberString(valueB)
+                    ? parseFloat(valueB)
+                    : valueB;
+                diff.change = simpul_1.default.math.change.num(numA, numB);
             }
             else if (simpul_1.default.isDate(valueA) && simpul_1.default.isDate(valueB)) {
                 diff.change = new Date(valueB).getTime() - new Date(valueA).getTime();

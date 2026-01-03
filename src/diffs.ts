@@ -2,42 +2,49 @@ import simpul from "simpul";
 import dottpathMap from "./map";
 import dottpathExtract from "./extract";
 
-interface Diff {
+export interface Diff {
   path: string;
-  valueA: any;
-  valueB: any;
-  state: string;
+  valueA: unknown;
+  valueB: unknown;
+  state: "value changed" | "property added" | "property removed";
   change?: number;
   timestamp: number;
 }
 
 function dottpathDiffs(
-  jsonA: any,
-  jsonB: any,
+  inputA: unknown,
+  inputB: unknown,
   excludes: string[] = [],
 ): Diff[] {
   const diffs: Diff[] = [];
 
-  if (!simpul.isJSON(jsonA) || !simpul.isJSON(jsonB)) return diffs;
+  if (
+    !simpul.isJSON(inputA) ||
+    !simpul.isJSON(inputB) ||
+    Object.is(inputA, inputB) ||
+    JSON.stringify(inputA) === JSON.stringify(inputB)
+  ) {
+    return diffs;
+  }
 
-  if (JSON.stringify(jsonA) === JSON.stringify(jsonB)) return diffs;
+  let paths = [...new Set([...dottpathMap(inputA), ...dottpathMap(inputB)])];
 
-  let paths = [...new Set([...dottpathMap(jsonA), ...dottpathMap(jsonB)])];
+  const excludeSet = [...new Set(excludes)];
 
-  paths.sort();
-
-  if (excludes.length > 0) {
+  if (excludeSet.length > 0) {
     paths = paths.filter((path) => {
-      return !excludes.some((exclude) => path.startsWith(exclude));
+      return !excludeSet.some((exclude) => path.startsWith(exclude));
     });
   }
+
+  paths.sort();
 
   const timestamp = Date.now();
 
   for (const path of paths) {
-    const valueA = dottpathExtract(jsonA, path);
+    const valueA = dottpathExtract(inputA, path);
 
-    const valueB = dottpathExtract(jsonB, path);
+    const valueB = dottpathExtract(inputB, path);
 
     const isDiff =
       simpul.isDate(valueA) && simpul.isDate(valueB)
@@ -57,14 +64,22 @@ function dottpathDiffs(
 
       const isValidValueB = simpul.isValid(valueB);
 
-      if (valueA && !isValidValueB) {
-        diff.state = "property removed";
-      } else if (valueB && !isValidValueA) {
+      if (!isValidValueA && isValidValueB) {
         diff.state = "property added";
+      } else if (isValidValueA && !isValidValueB) {
+        diff.state = "property removed";
       }
 
-      if (simpul.isNumber(valueA) && simpul.isNumber(valueB)) {
-        diff.change = simpul.math.change.num(valueA, valueB);
+      if (simpul.isNumeric(valueA) && simpul.isNumeric(valueB)) {
+        const numA = simpul.isNumberString(valueA)
+          ? parseFloat(valueA)
+          : valueA;
+
+        const numB = simpul.isNumberString(valueB)
+          ? parseFloat(valueB)
+          : valueB;
+
+        diff.change = simpul.math.change.num(numA, numB);
       } else if (simpul.isDate(valueA) && simpul.isDate(valueB)) {
         diff.change = new Date(valueB).getTime() - new Date(valueA).getTime();
       }

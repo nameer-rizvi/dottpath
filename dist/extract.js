@@ -4,17 +4,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const simpul_1 = __importDefault(require("simpul"));
-function dottpathExtract(json, extract) {
+function dottpathExtract(input, extract) {
     if (simpul_1.default.isString(extract)) {
-        return extract.split(".").reduce((o, i) => o === null || o === void 0 ? void 0 : o[i], json);
+        let result = input;
+        for (const path of extract.split("."))
+            result = result === null || result === void 0 ? void 0 : result[path];
+        return result;
     }
     else if (simpul_1.default.isArray(extract)) {
-        return extract.map((item) => dottpathExtract(json, item));
+        const results = [];
+        for (const path of extract)
+            results.push(dottpathExtract(input, path));
+        return results;
     }
     else if (simpul_1.default.isObject(extract)) {
-        return Object.entries(extract).reduce((result, [key, value]) => {
-            return Object.assign(Object.assign({}, result), { [key]: dottpathExtract(json, value) });
-        }, {});
+        const result = {};
+        for (const [key, value] of Object.entries(extract))
+            result[key] = dottpathExtract(input, value);
+        return result;
     }
 }
 exports.default = dottpathExtract;

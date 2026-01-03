@@ -12,12 +12,12 @@ const extractA = dottpath.extract(jsonA, mapA);
 
 const extractB = dottpath.extract(jsonB, mapB);
 
-dottpath.set(
+const setA = dottpath.set(
   jsonA,
   mapA.reduce((o, k) => ({ ...o, [k]: 0 }), {}),
 );
 
-dottpath.set(
+const setB = dottpath.set(
   jsonB,
   mapB.reduce((o, k) => ({ ...o, [k]: null }), {}),
 );
@@ -29,4 +29,15 @@ const diffsA = dottpath.diffs(
 
 const diffsB = dottpath.diffs({ 1: [1, [2], { 3: 4 }], 2: "thing" }, jsonB);
 
-console.log({ jsonA, jsonB, mapA, mapB, extractA, extractB, diffsA, diffsB });
+console.log({
+  jsonA,
+  jsonB,
+  mapA,
+  mapB,
+  extractA,
+  extractB,
+  setA,
+  setB,
+  diffsA,
+  diffsB,
+});

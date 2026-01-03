@@ -1,14 +1,19 @@
 import simpul from "simpul";
 
-function dottpathExtract(json: any, extract: any): any {
+function dottpathExtract(input: unknown, extract: unknown): any {
   if (simpul.isString(extract)) {
-    return extract.split(".").reduce((o: any, i: any) => o?.[i], json);
+    let result: any = input;
+    for (const path of extract.split(".")) result = result?.[path];
+    return result;
   } else if (simpul.isArray(extract)) {
-    return extract.map((item: any) => dottpathExtract(json, item));
+    const results: any[] = [];
+    for (const path of extract) results.push(dottpathExtract(input, path));
+    return results;
   } else if (simpul.isObject(extract)) {
-    return Object.entries(extract).reduce((result, [key, value]) => {
-      return { ...result, [key]: dottpathExtract(json, value) };
-    }, {});
+    const result: Record<string, any> = {};
+    for (const [key, value] of Object.entries(extract))
+      result[key] = dottpathExtract(input, value);
+    return result;
   }
 }
 

@@ -1,2 +1,2 @@
-declare function dottpathExtract(json: any, extract: any): any;
+declare function dottpathExtract(input: unknown, extract: unknown): any;
 export default dottpathExtract;

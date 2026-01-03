@@ -1,22 +1,23 @@
 import simpul from "simpul";
 
-function dottpathMap(json: any, prepend = ""): string[] {
-  const paths: any[] = [];
+const DELIMITER = ".";
 
-  const delimiter = ".";
+function dottpathMap(input: unknown, prefix = ""): string[] {
+  const paths: any = [];
 
-  if (simpul.isArray(json)) {
-    json.forEach((item: any, i: number) => {
-      const path = prepend ? [prepend, i].join(delimiter) : i.toString();
+  if (simpul.isArray(input)) {
+    for (let i = 0; i < input.length; i++) {
+      const item = input[i];
+      const path = prefix ? [prefix, i].join(DELIMITER) : i.toString();
       const pushPath = isComposite(item) ? dottpathMap(item, path) : path;
       if (pushPath) paths.push(pushPath);
-    });
-  } else if (simpul.isObject(json)) {
-    Object.entries(json).forEach(([key, value]) => {
-      const path = prepend ? [prepend, key].join(delimiter) : key;
+    }
+  } else if (simpul.isObject(input)) {
+    for (const [key, value] of Object.entries(input)) {
+      const path = prefix ? [prefix, key].join(DELIMITER) : key;
       const pushPath = isComposite(value) ? dottpathMap(value, path) : path;
       if (pushPath) paths.push(pushPath);
-    });
+    }
   }
 
   return paths.flat();

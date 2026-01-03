@@ -4,11 +4,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const simpul_1 = __importDefault(require("simpul"));
-function dottpathSet(json, set) {
-    if (simpul_1.default.isJSON(json) && simpul_1.default.isObject(set)) {
-        simpul_1.default.recursively(json, ({ path, value }) => {
-            return Object.keys(set).includes(path) ? set[path] : value;
+function dottpathSet(input, set) {
+    if (simpul_1.default.isJSON(input) && simpul_1.default.isObjectNonEmpty(set)) {
+        const keys = Object.keys(set);
+        return simpul_1.default.recursively(input, ({ path, value }) => {
+            return keys.includes(path) ? set[path] : value;
         });
     }
+    else
+        return input;
 }
 exports.default = dottpathSet;

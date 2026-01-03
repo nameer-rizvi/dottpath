@@ -1,2 +1,2 @@
-declare function dottpathSet(json: any, set: Record<string, any>): void;
+declare function dottpathSet(input: unknown, set: Record<string, any>): any;
 export default dottpathSet;

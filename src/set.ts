@@ -1,11 +1,12 @@
 import simpul from "simpul";
 
-function dottpathSet(json: any, set: Record<string, any>): void {
-  if (simpul.isJSON(json) && simpul.isObject(set)) {
-    simpul.recursively(json, ({ path, value }) => {
-      return Object.keys(set).includes(path) ? set[path] : value;
+function dottpathSet(input: unknown, set: Record<string, any>): any {
+  if (simpul.isJSON(input) && simpul.isObjectNonEmpty(set)) {
+    const keys = Object.keys(set);
+    return simpul.recursively(input, ({ path, value }) => {
+      return keys.includes(path) ? set[path] : value;
     });
-  }
+  } else return input;
 }
 
 export default dottpathSet;

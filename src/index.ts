@@ -1,3 +1,4 @@
+import dottpathExtract from "./extract.js";
 import dottpathSet from "./set.js";
 
-export default { set: dottpathSet };
+export default { extract: dottpathExtract, set: dottpathSet };

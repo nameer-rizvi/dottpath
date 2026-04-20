@@ -1,9 +1,9 @@
-import { unique } from "../dist/esm/index.js";
+import dottpath from "../dist/esm/index.js";
 
-// --- array utils ---
-console.assert(
-  JSON.stringify(unique([1, 2, 2, 3, 3])) === JSON.stringify([1, 2, 3]),
-  "unique failed",
-);
-
-console.log("✅ ESM tests passed!");
+console.log("mjs -->", [
+  dottpath.set({ a: 1, b: { c: 2 } }, { "b.c": 99 }),
+  dottpath.set({ a: 1, b: { c: 2 } }, { a: 0 }),
+  dottpath.set([1, [2, 3]], { "1.0": 99 }),
+  dottpath.set({ a: 1 }, {}),
+  dottpath.set(null, { a: 1 }),
+]);

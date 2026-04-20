@@ -1,9 +1,9 @@
-const { unique } = require("../dist/cjs/index.js");
+const dottpath = require("../dist/cjs/index.js");
 
-// --- array utils ---
-console.assert(
-  JSON.stringify(unique([1, 2, 2, 3, 3])) === JSON.stringify([1, 2, 3]),
-  "unique failed",
-);
-
-console.log("✅ CJS tests passed!");
+console.log("cjs -->", [
+  dottpath.set({ a: 1, b: { c: 2 } }, { "b.c": 99 }),
+  dottpath.set({ a: 1, b: { c: 2 } }, { a: 0 }),
+  dottpath.set([1, [2, 3]], { "1.0": 99 }),
+  dottpath.set({ a: 1 }, {}),
+  dottpath.set(null, { a: 1 }),
+]);

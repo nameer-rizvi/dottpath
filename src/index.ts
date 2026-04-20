@@ -1,1 +1,3 @@
-export * from "./array.js";
+import dottpathSet from "./set.js";
+
+export default { set: dottpathSet };

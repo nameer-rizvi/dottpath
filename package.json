@@ -2,7 +2,7 @@
   "name": "dottpath",
   "packageManager": "yarn@4.13.0",
   "version": "0.2.3",
-  "description": "todo",
+  "description": "Use dot path notation to find diffs, map paths, and set or extract values in JSON-serializable inputs.",
   "author": "Nameer Rizvi (https://github.com/nameer-rizvi)",
   "license": "MIT",
   "repository": {

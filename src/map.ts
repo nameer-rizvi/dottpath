@@ -1,4 +1,4 @@
-import * as utils from "@nameer/utils";
+import * as utilN from "@nameer/utils";
 
 const DELIMITER = ".";
 
@@ -17,22 +17,22 @@ const DELIMITER = ".";
 function dottpathMap(input: unknown, prefix = ""): string[] {
   const paths: string[] = [];
 
-  if (utils.isArray(input)) {
+  if (utilN.isArray(input)) {
     const arr = input as unknown[];
     for (let i = 0; i < arr.length; i++) {
       const item = arr[i];
       const path = prefix ? [prefix, i].join(DELIMITER) : i.toString();
       const pushPath = isComposite(item) ? dottpathMap(item, path) : path;
       if (pushPath) {
-        paths.push(...(utils.isArray(pushPath) ? pushPath : [pushPath]));
+        paths.push(...(utilN.isArray(pushPath) ? pushPath : [pushPath]));
       }
     }
-  } else if (utils.isObject(input)) {
+  } else if (utilN.isObject(input)) {
     for (const [key, value] of Object.entries(input)) {
       const path = prefix ? [prefix, key].join(DELIMITER) : key;
       const pushPath = isComposite(value) ? dottpathMap(value, path) : path;
       if (pushPath) {
-        paths.push(...(utils.isArray(pushPath) ? pushPath : [pushPath]));
+        paths.push(...(utilN.isArray(pushPath) ? pushPath : [pushPath]));
       }
     }
   }
@@ -41,7 +41,7 @@ function dottpathMap(input: unknown, prefix = ""): string[] {
 }
 
 function isComposite(item: unknown): boolean {
-  return utils.isArray(item) || utils.isObject(item);
+  return utilN.isArray(item) || utilN.isObject(item);
 }
 
 export default dottpathMap;

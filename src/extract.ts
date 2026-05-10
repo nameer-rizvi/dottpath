@@ -1,4 +1,4 @@
-import * as utils from "@nameer/utils";
+import * as utilN from "@nameer/utils";
 
 /**
  * Extracts values from an input using dot path notation.
@@ -13,20 +13,20 @@ import * as utils from "@nameer/utils";
  * dottpathExtract(null, "a.b")                                   // undefined
  */
 function dottpathExtract(input: unknown, extract: unknown): unknown {
-  if (utils.isString(extract)) {
+  if (utilN.isString(extract)) {
     let result: unknown = input;
     for (const path of extract.split("."))
       result = (result as Record<string, unknown>)?.[path];
     return result;
   }
 
-  if (utils.isArray(extract)) {
+  if (utilN.isArray(extract)) {
     const results: unknown[] = [];
     for (const path of extract) results.push(dottpathExtract(input, path));
     return results;
   }
 
-  if (utils.isObject(extract)) {
+  if (utilN.isObject(extract)) {
     const result: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(extract))
       result[key] = dottpathExtract(input, value);

@@ -1,4 +1,4 @@
-import * as utils from "@nameer/utils";
+import * as utilN from "@nameer/utils";
 import dottpathMap from "./map.js";
 import dottpathExtract from "./extract.js";
 
@@ -39,8 +39,8 @@ function dottpathDiffs(
   const diffs: Diff[] = [];
 
   if (
-    !utils.isJson(inputA) ||
-    !utils.isJson(inputB) ||
+    !utilN.isJson(inputA) ||
+    !utilN.isJson(inputB) ||
     Object.is(inputA, inputB) ||
     JSON.stringify(inputA) === JSON.stringify(inputB)
   ) {
@@ -66,7 +66,7 @@ function dottpathDiffs(
     const valueB = dottpathExtract(inputB, path);
 
     const isDiff =
-      utils.isDate(valueA) && utils.isDate(valueB)
+      utilN.isDate(valueA) && utilN.isDate(valueB)
         ? new Date(valueA).getTime() !== new Date(valueB).getTime()
         : valueA !== valueB;
 
@@ -79,8 +79,8 @@ function dottpathDiffs(
         timestamp,
       };
 
-      const isValidValueA = utils.isValid(valueA);
-      const isValidValueB = utils.isValid(valueB);
+      const isValidValueA = utilN.isValid(valueA);
+      const isValidValueB = utilN.isValid(valueB);
 
       if (!isValidValueA && isValidValueB) {
         diff.state = "property added";
@@ -88,11 +88,11 @@ function dottpathDiffs(
         diff.state = "property removed";
       }
 
-      if (utils.isNumeric(valueA) && utils.isNumeric(valueB)) {
-        const numA = utils.isNumberString(valueA) ? parseFloat(valueA) : valueA;
-        const numB = utils.isNumberString(valueB) ? parseFloat(valueB) : valueB;
-        diff.change = utils.math.change.num(numA, numB);
-      } else if (utils.isDate(valueA) && utils.isDate(valueB)) {
+      if (utilN.isNumeric(valueA) && utilN.isNumeric(valueB)) {
+        const numA = utilN.isNumberString(valueA) ? parseFloat(valueA) : valueA;
+        const numB = utilN.isNumberString(valueB) ? parseFloat(valueB) : valueB;
+        diff.change = utilN.math.change.num(numA, numB);
+      } else if (utilN.isDate(valueA) && utilN.isDate(valueB)) {
         diff.change =
           new Date(valueB as string).getTime() -
           new Date(valueA as string).getTime();

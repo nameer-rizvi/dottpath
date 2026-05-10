@@ -1,7 +1,7 @@
 {
   "name": "dottpath",
   "packageManager": "yarn@4.13.0",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Use dot path notation to find diffs, map paths, and set or extract values in JSON-serializable inputs.",
   "author": "Nameer Rizvi (https://github.com/nameer-rizvi)",
   "license": "MIT",
@@ -63,6 +63,6 @@
     "typescript-eslint": "^8.58.0"
   },
   "dependencies": {
-    "@nameer/utils": "^0.1.2"
+    "@nameer/utils": "^0.1.3"
   }
 }

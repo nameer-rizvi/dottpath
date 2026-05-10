@@ -1,4 +1,4 @@
-import * as utils from "@nameer/utils";
+import * as utilN from "@nameer/utils";
 
 /**
  * Sets values at specified dot paths in a JSON-serializable input.
@@ -11,9 +11,9 @@ import * as utils from "@nameer/utils";
  * dottpathSet(null, { "a": 1 })                         // null
  */
 function dottpathSet(input: unknown, set: Record<string, unknown>): unknown {
-  if (utils.isObject(set)) {
+  if (utilN.isObject(set)) {
     const keys = Object.keys(set);
-    return utils.recursively(input, ({ path, value }) => {
+    return utilN.recursively(input, ({ path, value }) => {
       return keys.includes(path) ? set[path] : value;
     });
   }
